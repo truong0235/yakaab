@@ -10,5 +10,9 @@
     "kahoot"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "kahoot.js-latest": "^1.0.7"
+  }
 }
+
