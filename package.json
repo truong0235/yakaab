@@ -1,0 +1,14 @@
+{
+  "name": "yakaab",
+  "version": "1.0.0",
+  "description": "yet another kahoot auto answer bot",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "keywords": [
+    "kahoot"
+  ],
+  "author": "",
+  "license": "ISC"
+}
