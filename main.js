@@ -94,7 +94,7 @@ async function main(){
 
         //create array of active accounts
         for (let i = 0; i < name.length; i++){
-            botlist[i] = createBot(name[i], answers);
+            botlist[i] = await createBot(name[i], answers);
         }
 
     } catch(error){
