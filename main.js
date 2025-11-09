@@ -1,15 +1,15 @@
 const kahoot = require("kahoot.js-latest");
 
 
-const ID = "7d3c5fd8-9e02-4abe-ada3-4mb4tuk4m24d"; //must have this id to get answers, should be on teacher's url while screenshare or projecting
-const gamePin = "1234567"; //put the room's gamepin here
-const name = "abcdef" //change your name here
+const ID = "491c6e95-8c93-408a-9075-c7468c8e14fd"; //must have this id to get answers, should be on teacher's url while screenshare or projecting
+const gamePin = "121583"; //put the room's gamepin here
+const name = ["abcdessf", "a", "ambatukama"] //change your name here
 
 //change min and max delay to get different score range, default will get 1000 ~ 980 score per question
 const maxDelay = 400;
 const minDelay = 0;
 
-
+var botlist = [];
 
 const baseDelay = 250; //dont change this, max delay to get 1k ponit per answer
 var delay = () => {
@@ -17,7 +17,7 @@ var delay = () => {
 };
 
 function sleep(ms){
-    console.log("sleep for " + ms + " ms")
+    // console.log("sleep for " + ms + " ms")
     var waitTill = new Date(new Date().getTime() + ms);
     while(waitTill > new Date()){}
 }
@@ -32,7 +32,7 @@ async function getAssestRaw(ID) {
         return result;
 }
 
-async function getQuestionsList(ID) {
+async function getAnswersList(ID) {
         const answers = await getAssestRaw(ID);
         var result = answers.questions;
         if (result == null)
@@ -40,18 +40,29 @@ async function getQuestionsList(ID) {
         return result
 }
 
-async function main() {
-        const answers = await getQuestionsList(ID);
-        
+async function isRoomExist(gamePin){
+    var flag = false;
+    try{
+        const response = await fetch(`https://kahoot.it/reserve/session/${gamePin}`);
+        if (response.ok)
+            flag = true;
+    } catch(error){
+        console.log(error);
+    } finally {
+        return flag;
+    }
+}
+
+async function createBot(accountName, answers){
         const client = new kahoot();
-        client.join(gamePin, name)
-            .catch(err =>{console.log(err)})
-        
+        console.log(client)
+        client.join(gamePin, accountName)
+            .catch(err =>{console.log(err)});
         client.on("Joined", () => {
-            console.log(name + " joined the Kahoot!");
+            console.log(accountName + " joined the Kahoot!");
         });
         client.on("QuizStart", () => {
-            console.log("The quiz has started!");
+            console.log("Quiz started!");
         });
         client.on("QuestionStart", (question) => {
             var currQuestionIndex = question.gameBlockIndex;
@@ -59,16 +70,44 @@ async function main() {
             sleep(delay())
             for(let i = 0; i < question.numberOfChoices; i++){
                 if (answerList[i].correct == true){
-                    console.log("answer choose: " + i);
+                    console.log(client);
+                    console.log(accountName + "choose answer: " + i);
                     question.answer(i);
                 }
             }
-            console.log("question answered by " + name);
         });
         client.on("QuizEnd", () => {
             console.log("The quiz has ended.");
         });
+        return client;
+}
+
+async function main(){
+    try{
+        const answers = await getAnswersList(ID);
+
+        const checkGamePin = await isRoomExist(gamePin);
+
+        if (!checkGamePin){
+            throw new Error("game pin doesnt exist");
+        }
+
+        //create array of active accounts
+        for (let i = 0; i < name.length; i++){
+            botlist[i] = createBot(name[i], answers);
+        }
+
+    } catch(error){
+        console.log(error);
+    }
 }
 
 main()
 
+process.on("SIGINT", () => {
+    console.log("recieve kill signal, terminating account sessions...");
+    for(i = 0; i < botlist.length; i++){
+        botlist[i].leave();
+    }
+    console.log("cleaning bot complete")
+})
