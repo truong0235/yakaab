@@ -2,8 +2,8 @@ const kahoot = require("kahoot.js-latest");
 
 
 const ID = "491c6e95-8c93-408a-9075-c7468c8e14fd"; //must have this id to get answers, should be on teacher's url while screenshare or projecting
-const gamePin = "121583"; //put the room's gamepin here
-const name = ["abcdessf", "a", "ambatukama"] //change your name here
+const gamePin = "3486053"; //put the room's gamepin here
+const name = ["abcdeassf", "aa", "ambatuakama"] //change your name here
 
 //change min and max delay to get different score range, default will get 1000 ~ 980 score per question
 const maxDelay = 400;
@@ -17,7 +17,7 @@ var delay = () => {
 };
 
 function sleep(ms){
-    // console.log("sleep for " + ms + " ms")
+    console.log("sleep for " + ms + " ms")
     var waitTill = new Date(new Date().getTime() + ms);
     while(waitTill > new Date()){}
 }
@@ -55,26 +55,27 @@ async function isRoomExist(gamePin){
 
 async function createBot(accountName, answers){
         const client = new kahoot();
-        console.log(client)
+        // console.log(client)
         client.join(gamePin, accountName)
             .catch(err =>{console.log(err)});
         client.on("Joined", () => {
-            console.log(accountName + " joined the Kahoot!");
+            console.log(`${accountName} joined Kahoot`);
         });
         client.on("QuizStart", () => {
             console.log("Quiz started!");
         });
         client.on("QuestionStart", (question) => {
+            var wait = delay();
             var currQuestionIndex = question.gameBlockIndex;
             var answerList = answers[currQuestionIndex].choices;
-            sleep(delay())
-            for(let i = 0; i < question.numberOfChoices; i++){
-                if (answerList[i].correct == true){
-                    console.log(client);
-                    console.log(accountName + "choose answer: " + i);
-                    question.answer(i);
-                }
-            }
+            setTimeout(() => {
+                console.log(`waited for ${wait}ms`);
+                for(let i = 0; i < question.numberOfChoices; i++){
+                    if (answerList[i].correct == true){
+                        console.log(`${accountName} choose answer ${i}`);
+                        question.answer(i);
+                    }
+                }}, wait);
         });
         client.on("QuizEnd", () => {
             console.log("The quiz has ended.");
@@ -101,7 +102,6 @@ async function main(){
         console.log(error);
     }
 }
-
 main()
 
 process.on("SIGINT", () => {
