@@ -1,13 +1,14 @@
 const kahoot = require("kahoot.js-latest");
+require('dotenv').config()
 
+var env = process.env;
 
-const ID = "491c6e95-8c93-408a-9075-c7468c8e14fd"; //must have this id to get answers, should be on teacher's url while screenshare or projecting
-const gamePin = "3486053"; //put the room's gamepin here
-const name = ["abcdeassf", "aa", "ambatuakama"] //change your name here
+const ID = env.ROOMID; 
+const gamePin = env.ROOMPIN; 
+const name = JSON.parse(env.USERNAMES) 
 
-//change min and max delay to get different score range, default will get 1000 ~ 980 score per question
-const maxDelay = 400;
-const minDelay = 0;
+const minDelay = env.MINDELAY;
+const maxDelay = env.MAXDELAY;
 
 var botlist = [];
 
@@ -16,11 +17,11 @@ var delay = () => {
     return parseInt(baseDelay + minDelay + Math.random() * maxDelay)
 };
 
-function sleep(ms){
-    console.log("sleep for " + ms + " ms")
-    var waitTill = new Date(new Date().getTime() + ms);
-    while(waitTill > new Date()){}
-}
+// function sleep(ms){
+//     console.log("sleep for " + ms + " ms")
+//     var waitTill = new Date(new Date().getTime() + ms);
+//     while(waitTill > new Date()){}
+// }
 
 async function getAssestRaw(ID) {
         const answerResource = `https://play.kahoot.it/rest/kahoots/${ID}`;
