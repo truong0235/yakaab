@@ -7,12 +7,13 @@ const ID = env.ROOMID;
 const gamePin = env.ROOMPIN; 
 const name = JSON.parse(env.USERNAMES) 
 
-const minDelay = env.MINDELAY;
-const maxDelay = env.MAXDELAY;
-
+//check condition
+const minDelay = (parseInt(env.MINDELAY) > 0) ? parseInt(env.MINDELAY) : 0;
+const maxDelay = (parseInt(env.MAXDELAY) > minDelay) ? parseInt(env.MAXDELAY) : minDelay;
 var botlist = [];
 
 const baseDelay = 250; //dont change this, max delay to get 1k ponit per answer
+
 var delay = () => {
     return parseInt(baseDelay + minDelay + Math.random() * maxDelay)
 };
@@ -56,7 +57,6 @@ async function isRoomExist(gamePin){
 
 async function createBot(accountName, answers){
         const client = new kahoot();
-        // console.log(client)
         client.join(gamePin, accountName)
             .catch(err =>{console.log(err)});
         client.on("Joined", () => {
@@ -105,6 +105,7 @@ async function main(){
 }
 main()
 
+//doesnt work as expected, still some leftover sessions alive and answer questons???
 process.on("SIGINT", () => {
     console.log("recieve kill signal, terminating account sessions...");
     for(i = 0; i < botlist.length; i++){
